@@ -62,7 +62,6 @@ class Scenario(BaseScenario):
                     collisions += 1
         return (rew, collisions, min_dists, occupied_landmarks)
 
-
     def is_collision(self, agent1, agent2):
         delta_pos = agent1.state.p_pos - agent2.state.p_pos
         dist = np.sqrt(np.sum(np.square(delta_pos)))
@@ -77,7 +76,7 @@ class Scenario(BaseScenario):
             rew -= min(dists)
         if agent.collide:
             for a in world.agents:
-                if self.is_collision(a, agent):
+                if a is not agent and self.is_collision(a, agent):
                     rew -= 1
         return rew
 
