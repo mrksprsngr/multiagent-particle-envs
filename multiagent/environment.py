@@ -11,10 +11,16 @@ class MultiAgentEnv(gym.Env):
         'render.modes' : ['human', 'rgb_array']
     }
 
-    def __init__(self, world, reset_callback=None, reward_callback=None,
-                 observation_callback=None, info_callback=None,
-                 done_callback=None, shared_viewer=True):
-
+    def __init__(
+            self,
+            world,
+            reset_callback=None,
+            reward_callback=None,
+            observation_callback=None,
+            info_callback=None,
+            done_callback=None,
+            shared_viewer=True
+    ):
         self.world = world
         self.agents = self.world.policy_agents
         # set required vectorized gym env property
@@ -28,7 +34,7 @@ class MultiAgentEnv(gym.Env):
         # environment parameters
         self.discrete_action_space = True
         # if true, action is a number 0...N, otherwise action is a one-hot N-dimensional vector
-        self.discrete_action_input = False
+        self.discrete_action_input = True
         # if true, even the action is continuous, action will be performed discretely
         self.force_discrete_action = world.discrete_action if hasattr(world, 'discrete_action') else False
         # if true, every agent has the same reward
@@ -176,6 +182,8 @@ class MultiAgentEnv(gym.Env):
                 else:
                     agent.action.u = action[0]
             sensitivity = 5.0
+            # todo sven: changed to small number
+            sensitivity = 0.5
             if agent.accel is not None:
                 sensitivity = agent.accel
             agent.action.u *= sensitivity

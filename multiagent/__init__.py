@@ -19,3 +19,16 @@ register(
     entry_point='multiagent.envs:SimpleSpeakerListenerEnv',
     max_episode_steps=100,
 )
+
+
+register(
+    id='Simple-v0',
+    entry_point='multiagent.envs.simple:SimpleEnv',
+    max_episode_steps=100,
+)
+
+register(
+    id='Simplespread-v2',
+    entry_point='multiagent.envs.simple_spread:SimpleSpreadEnv',
+    max_episode_steps=100,
+)
