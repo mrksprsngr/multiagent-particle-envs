@@ -144,10 +144,12 @@ class World(object):
     def apply_action_force(self, p_force):
         # set applied forces
         for i, agent in enumerate(self.agents):
-            if agent.movable:
+            if agent.movable and agent.u_noise is not None:
                 noise = np.random.randn(
-                    *agent.action.u.shape) * agent.u_noise if agent.u_noise else 0.0
+                    *agent.action.u.shape) * agent.u_noise
                 p_force[i] = agent.action.u + noise
+            else:
+                p_force = agent.action.u
         return p_force
 
     # gather physical forces acting on entities
@@ -180,6 +182,8 @@ class World(object):
                         np.square(entity.state.p_vel[0]) +
                         np.square(entity.state.p_vel[1])) * entity.max_speed
             entity.state.p_pos += entity.state.p_vel * self.dt
+
+            entity.state.p_pos = np.clip(entity.state.p_pos, -1, 1)
 
     def update_agent_state(self, agent):
         # set communication state (directly for now)
