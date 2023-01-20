@@ -149,7 +149,7 @@ class World(object):
                     *agent.action.u.shape) * agent.u_noise
                 p_force[i] = agent.action.u + noise
             else:
-                p_force = agent.action.u
+                p_force[i] = agent.action.u
         return p_force
 
     # gather physical forces acting on entities
@@ -158,7 +158,7 @@ class World(object):
         for a, entity_a in enumerate(self.entities):
             for b, entity_b in enumerate(self.entities):
                 if (b <= a): continue
-                [f_a, f_b] = self.get_collision_force(entity_a, entity_b)
+                f_a, f_b = self.get_collision_force(entity_a, entity_b)
                 if (f_a is not None):
                     if (p_force[a] is None): p_force[a] = 0.0
                     p_force[a] = f_a + p_force[a]
@@ -170,7 +170,8 @@ class World(object):
     # integrate physical state
     def integrate_state(self, p_force):
         for i, entity in enumerate(self.entities):
-            if not entity.movable: continue
+            if not entity.movable:
+                continue
             entity.state.p_vel = entity.state.p_vel * (1 - self.damping)
             if (p_force[i] is not None):
                 entity.state.p_vel += (p_force[i] / entity.mass) * self.dt
@@ -198,9 +199,9 @@ class World(object):
 
     def get_collision_force(self, entity_a, entity_b):
         if (not entity_a.collide) or (not entity_b.collide):
-            return [None, None]  # not a collider
+            return None, None  # not a collider
         if (entity_a is entity_b):
-            return [None, None]  # don't collide against itself
+            return None, None  # don't collide against itself
         # compute actual distance between entities
         delta_pos = entity_a.state.p_pos - entity_b.state.p_pos
         dist = np.sqrt(np.sum(np.square(delta_pos)))
@@ -212,4 +213,4 @@ class World(object):
         force = self.contact_force * delta_pos / dist * penetration
         force_a = +force if entity_a.movable else None
         force_b = -force if entity_b.movable else None
-        return [force_a, force_b]
+        return force_a, force_b

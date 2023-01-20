@@ -173,8 +173,6 @@ class MultiAgentEnv(gym.Env):
                 act.append(action[index:(index + s)])
                 index += s
             action = act
-        else:
-            action = [action]
 
         if agent.movable:
             agent.action.u = action
