@@ -41,6 +41,8 @@ class Scenario(BaseScenario):
 
     def reward(self, agent, world):
         dist2 = np.sum(np.square(agent.state.p_pos - world.landmarks[0].state.p_pos))
+        # print(f"agent: {agent.state.p_pos} target: {world.landmarks[0].state.p_pos} "
+        #       f"rew: {-dist2:0.2f}")
         return -dist2
 
     def observation(self, agent, world):
@@ -48,4 +50,6 @@ class Scenario(BaseScenario):
         entity_pos = []
         for entity in world.landmarks:
             entity_pos.append(entity.state.p_pos - agent.state.p_pos)
-        return np.concatenate([agent.state.p_vel] + entity_pos)
+        obs = np.concatenate([agent.state.p_vel] + entity_pos)
+        # print(f"obs: {obs}")
+        return obs

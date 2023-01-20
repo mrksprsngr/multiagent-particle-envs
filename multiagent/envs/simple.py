@@ -19,7 +19,7 @@ class SimpleEnv(gym.Wrapper):
             observation_callback=scenario.observation,
             info_callback=None,
             done_callback=None,
-            shared_viewer=False
+            shared_viewer=True  # set to True to make rendering static
         )
         super(SimpleEnv, self).__init__(env)
 
@@ -32,7 +32,8 @@ class SimpleEnv(gym.Wrapper):
         return xs[0], rs[0], dones[0], info
 
     def reset(self, **kwargs):
-        return self.env.reset(**kwargs)
+        xs = self.env.reset(**kwargs)
+        return xs[0]
 
     def render(self, mode="human", **kwargs):
         return self.env.render(mode, **kwargs)
