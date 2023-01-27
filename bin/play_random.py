@@ -15,10 +15,12 @@ if __name__ == '__main__':
     while True:
         x = env.reset()
         for i in range(100):
-            env.render()
+            #env.render()
             actions = []
             for acs in env.action_space:
                 action = acs.sample()
                 actions.append(action)
+            print(actions)
             env.step(actions)
+            
 

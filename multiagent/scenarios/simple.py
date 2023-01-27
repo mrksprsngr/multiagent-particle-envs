@@ -7,13 +7,13 @@ class Scenario(BaseScenario):
     def make_world(self):
         world = World()
         # add agents
-        world.agents = [Agent() for i in range(1)]
+        world.agents = [Agent() for i in range(1)] #number of agents
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = False
             agent.silent = True
         # add landmarks
-        world.landmarks = [Landmark() for i in range(1)]
+        world.landmarks = [Landmark() for i in range(1)] #number of landmarks
         for i, landmark in enumerate(world.landmarks):
             landmark.name = 'landmark %d' % i
             landmark.collide = False
@@ -39,7 +39,8 @@ class Scenario(BaseScenario):
             landmark.state.p_pos = np.random.uniform(-1,+1, world.dim_p)
             landmark.state.p_vel = np.zeros(world.dim_p)
 
-    def reward(self, agent, world):
+    def reward(self, agent, world): #changed it so that every agent goes to one landmark
+        #for landmark in range(0,len(world.landmarks)):
         dist2 = np.sum(np.square(agent.state.p_pos - world.landmarks[0].state.p_pos))
         # print(f"agent: {agent.state.p_pos} target: {world.landmarks[0].state.p_pos} "
         #       f"rew: {-dist2:0.2f}")
