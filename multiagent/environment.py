@@ -108,7 +108,11 @@ class MultiAgentEnv(gym.Env):
         self.agents = self.world.policy_agents
         # set action for each agent
         for i, agent in enumerate(self.agents):
+<<<<<<< HEAD
             self._set_action(action_n[i], agent, self.action_spaces[i])
+=======
+            self._set_action(action_n[i], agent, self.action_space[i]) #changed action_space from [i] to nothing
+>>>>>>> 819aa54 (fixed comm inputs mixing with action inputs)
         # advance world state
         self.world.step()
         # record observation for each agent
