@@ -1,6 +1,9 @@
+from typing import Tuple
+import pygame
+from pygame import gfxdraw
+
 import gym
 from gym import spaces
-from gym.envs.registration import EnvSpec
 import numpy as np
 from multiagent.multi_discrete import MultiDiscrete
 
@@ -9,7 +12,8 @@ from multiagent.multi_discrete import MultiDiscrete
 # currently code assumes that no agents will be created/destroyed at runtime!
 class MultiAgentEnv(gym.Env):
     metadata = {
-        'render.modes': ['human', 'rgb_array']
+        'render.modes': ['human', 'rgb_array'],
+        "render_fps": 30
     }
 
     def __init__(
@@ -90,12 +94,8 @@ class MultiAgentEnv(gym.Env):
             agent.action.c = np.zeros(self.world.dim_c)
 
         # rendering
-        self.shared_viewer = shared_viewer
-        if self.shared_viewer:
-            self.viewers = [None]
-        else:
-            self.viewers = [None] * self.n
-        self._reset_render()
+        self.clock = None
+        self.screen = None
 
     def step(self, action_n):
         obs_n = []
@@ -126,8 +126,6 @@ class MultiAgentEnv(gym.Env):
     def reset(self):
         # reset world
         self.reset_callback(self.world)
-        # reset renderer
-        self._reset_render()
         # record observations for each agent
         obs_n = []
         self.agents = self.world.policy_agents
@@ -188,13 +186,8 @@ class MultiAgentEnv(gym.Env):
                 agent.action.c = action[0]
             # action = action[1:]
 
-    # reset rendering assets
-    def _reset_render(self):
-        self.render_geoms = None
-        self.render_geoms_xform = None
-
     # render environment
-    def render(self, mode='human'):
+    def render(self, mode='human', screen_dim: int = 700):
         if mode == 'human':
             alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
             message = ''
@@ -210,57 +203,47 @@ class MultiAgentEnv(gym.Env):
                                 other.name + ' to ' + agent.name + ': ' + word + '   ')
             print(message)
 
-        for i in range(len(self.viewers)):
-            # create viewers (if necessary)
-            if self.viewers[i] is None:
-                # import rendering only if we need it (and don't import for headless machines)
-                # from gym.envs.classic_control import rendering
-                from multiagent import rendering
-                self.viewers[i] = rendering.Viewer(700, 700)
-
-        # create rendering geometry
-        if self.render_geoms is None:
-            # import rendering only if we need it (and don't import for headless machines)
-            # from gym.envs.classic_control import rendering
-            from multiagent import rendering
-            self.render_geoms = []
-            self.render_geoms_xform = []
-            for entity in self.world.entities:
-                geom = rendering.make_circle(entity.size)
-                xform = rendering.Transform()
-                if 'agent' in entity.name:
-                    geom.set_color(*entity.color, alpha=0.5)
-                else:
-                    geom.set_color(*entity.color)
-                geom.add_attr(xform)
-                self.render_geoms.append(geom)
-                self.render_geoms_xform.append(xform)
-
-            # add geoms to viewer
-            for viewer in self.viewers:
-                viewer.geoms = []
-                for geom in self.render_geoms:
-                    viewer.add_geom(geom)
-
-        results = []
-        for i in range(len(self.viewers)):
-            from multiagent import rendering
-            # update bounds to center around agent
-            cam_range = 1
-            if self.shared_viewer:
-                pos = np.zeros(self.world.dim_p)
+        if self.screen is None:
+            pygame.init()
+            if mode == "human":
+                pygame.display.init()
+                self.screen = pygame.display.set_mode((screen_dim, screen_dim))
             else:
-                pos = self.agents[i].state.p_pos
-            self.viewers[i].set_bounds(pos[0] - cam_range, pos[0] + cam_range,
-                                       pos[1] - cam_range, pos[1] + cam_range)
-            # update geometry positions
-            for e, entity in enumerate(self.world.entities):
-                self.render_geoms_xform[e].set_translation(*entity.state.p_pos)
-            # render to display or array
-            results.append(
-                self.viewers[i].render(return_rgb_array=mode == 'rgb_array'))
+                self.screen = pygame.Surface((screen_dim, screen_dim))
+        if self.clock is None:
+            self.clock = pygame.time.Clock()
+        self.surf = pygame.Surface((screen_dim, screen_dim))
+        self.surf.fill((255, 255, 255))
 
-        return results
+        px_scale = screen_dim // 2
+        origin = screen_dim // 2
+
+        def position_to_pixels(pos: np.ndarray) -> Tuple[int, int]:
+            pos = np.clip(pos, -1, 1)
+            x = int(pos[0] * px_scale + origin)
+            y = int(pos[1] * px_scale + origin)
+            return (x, y)
+
+        for entity in self.world.entities:
+            x, y = position_to_pixels(entity.state.p_pos)
+            size = int(entity.size / 2 * screen_dim)
+            color = np.array(256 * entity.color, dtype=np.int64)
+            gfxdraw.filled_circle(self.surf, x, y, size, color)
+
+        self.surf = pygame.transform.flip(self.surf, False, True)
+        self.screen.blit(self.surf, (0, 0))
+
+        if mode == "human":
+            pygame.event.pump()
+            self.clock.tick(self.metadata["render_fps"])
+            pygame.display.flip()
+
+        if mode == "rgb_array":
+            return np.transpose(
+                np.array(pygame.surfarray.pixels3d(self.screen)), axes=(1, 0, 2)
+            )
+        else:
+            return None
 
     # create receptor field locations in local coordinate frame
     def _make_receptor_locations(self, agent):

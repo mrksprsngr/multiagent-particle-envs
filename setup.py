@@ -12,6 +12,7 @@ setup(name='multiagent',
       install_requires=[
             'gym==0.20.0',
             'numpy',
-            'numpy-stl'
+            'numpy-stl',
+            'pygame'
       ]
 )

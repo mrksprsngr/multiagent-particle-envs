@@ -28,8 +28,6 @@ Used in the paper [Multi-Agent Actor-Critic for Mixed Cooperative-Competitive En
 
 - `./multiagent/core.py`: contains classes for various objects (Entities, Landmarks, Agents, etc.) that are used throughout the code.
 
-- `./multiagent/rendering.py`: used for displaying agent behaviors on the screen.
-
 - `./multiagent/policy.py`: contains code for interactive policy based on keyboard input.
 
 - `./multiagent/scenario.py`: contains base scenario object that is extended for all scenarios.
