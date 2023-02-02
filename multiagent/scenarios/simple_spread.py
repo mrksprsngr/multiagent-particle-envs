@@ -98,4 +98,4 @@ class SimpleSpreadScenario(BaseScenario):
             if not other.silent:
                 comm.append(other.state.c)
             other_pos.append(other.state.p_pos - agent.state.p_pos)
-        return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos+ other_pos + comm)
+        return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos+ other_pos + np.asarray(comm))
