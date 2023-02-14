@@ -13,7 +13,7 @@ from multiagent.multi_discrete import MultiDiscrete
 class MultiAgentEnv(gym.Env):
     metadata = {
         'render.modes': ['human', 'rgb_array'],
-        "render_fps": 30
+        "render_fps": 60
     }
 
     def __init__(
@@ -50,8 +50,8 @@ class MultiAgentEnv(gym.Env):
         self.time = 0
 
         # configure spaces
-        self.action_space = []
-        self.observation_space = []
+        self.action_spaces = []
+        self.observation_spaces = []
         for agent in self.agents:
             total_action_space = []
             # physical action space
@@ -83,14 +83,13 @@ class MultiAgentEnv(gym.Env):
                          total_action_space])
                 else:
                     act_space = spaces.Tuple(total_action_space)
-                self.action_space.append(act_space)
+                self.action_spaces.append(act_space)
             else:
-                self.action_space.append(total_action_space[0])
+                self.action_spaces.append(total_action_space[0])
             # observation space
             obs_dim = len(observation_callback(agent, self.world))
-            self.observation_space.append(
-                spaces.Box(low=-np.inf, high=+np.inf, shape=(obs_dim,),
-                           dtype=np.float32))
+            self.observation_spaces.append(
+                spaces.Box(low=-np.inf, high=+np.inf, shape=(obs_dim,), dtype=np.float32))
             agent.action.c = np.zeros(self.world.dim_c)
 
         # rendering
@@ -105,7 +104,7 @@ class MultiAgentEnv(gym.Env):
         self.agents = self.world.policy_agents
         # set action for each agent
         for i, agent in enumerate(self.agents):
-            self._set_action(action_n[i], agent, self.action_space[i])
+            self._set_action(action_n[i], agent, self.action_spaces[i])
         # advance world state
         self.world.step()
         # record observation for each agent
@@ -175,7 +174,7 @@ class MultiAgentEnv(gym.Env):
         if agent.movable:
             agent.action.u = action
         else:
-            agent.action.u = np.zeros(self.action_space[0].shape[0])
+            agent.action.u = np.zeros(self.action_spaces[0].shape[0])
 
         if not agent.silent:
             # communication action
@@ -201,7 +200,7 @@ class MultiAgentEnv(gym.Env):
                         word = alphabet[np.argmax(other.state.c)]
                     message += (
                                 other.name + ' to ' + agent.name + ': ' + word + '   ')
-            print(message)
+            # print(message)
 
         if self.screen is None:
             pygame.init()
