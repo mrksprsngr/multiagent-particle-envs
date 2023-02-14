@@ -1,11 +1,11 @@
 from multiagent.environment import MultiAgentEnv
-from multiagent.scenarios.simple_spread import Scenario
+from multiagent.scenarios.simple_spread import SimpleSpreadScenario
 
 
 class SimpleSpreadEnv(MultiAgentEnv):
     def __init__(self):
 
-        scenario = Scenario()
+        scenario = SimpleSpreadScenario()
         world = scenario.make_world()
 
         MultiAgentEnv.__init__(

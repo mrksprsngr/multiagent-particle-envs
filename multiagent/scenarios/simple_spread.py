@@ -3,11 +3,11 @@ from multiagent.core import World, Agent, Landmark
 from multiagent.scenario import BaseScenario
 
 
-class Scenario(BaseScenario):
+class SimpleSpreadScenario(BaseScenario):
     def make_world(self):
         world = World()
         # set any world properties first
-        world.dim_c = 2
+        world.dim_c = 0
         num_agents = 3
         num_landmarks = 3
         world.collaborative = True
@@ -94,6 +94,7 @@ class Scenario(BaseScenario):
         other_pos = []
         for other in world.agents:
             if other is agent: continue
-            comm.append(other.state.c)
+            if not other.silent:
+                comm.append(other.state.c)
             other_pos.append(other.state.p_pos - agent.state.p_pos)
         return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos + other_pos + comm)

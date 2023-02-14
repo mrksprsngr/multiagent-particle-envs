@@ -68,7 +68,7 @@ class MultiAgentEnv(gym.Env):
             if self.discrete_action_space:
                 c_action_space = spaces.Discrete(world.dim_c)
             else:
-                c_action_space = spaces.Box(low=0.0, high=1.0,
+                c_action_space = spaces.Box(low=-1.0, high=1.0,
                                             shape=(world.dim_c,),
                                             dtype=np.float32)
             if not agent.silent:
@@ -82,7 +82,8 @@ class MultiAgentEnv(gym.Env):
                         [[0, act_space.n - 1] for act_space in
                          total_action_space])
                 else:
-                    act_space = spaces.Tuple(total_action_space)
+                    act_space_tuple = spaces.Tuple(total_action_space)
+                    act_space = spaces.flatten_space(act_space_tuple)
                 self.action_spaces.append(act_space)
             else:
                 self.action_spaces.append(total_action_space[0])
@@ -172,7 +173,7 @@ class MultiAgentEnv(gym.Env):
             action = act
 
         if agent.movable:
-            agent.action.u = action
+            agent.action.u = action[self.world.dim_c:]
         else:
             agent.action.u = np.zeros(self.action_spaces[0].shape[0])
 
@@ -182,7 +183,7 @@ class MultiAgentEnv(gym.Env):
                 agent.action.c = np.zeros(self.world.dim_c)
                 agent.action.c[action[0]] = 1.0
             else:
-                agent.action.c = action[0]
+                agent.action.c = action[:self.world.dim_c]
             # action = action[1:]
 
     # render environment
