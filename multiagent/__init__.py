@@ -21,3 +21,8 @@ register(
     id='ComSpread-v0',
     entry_point='multiagent.envs.com_spread:ComSpreadEnv',
 )
+
+register(
+    id='POMDPComSpreadEnv-v0',
+    entry_point='multiagent.envs.pomdp_com_spread:POMDPComSpreadEnv',
+)
