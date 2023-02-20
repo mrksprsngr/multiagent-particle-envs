@@ -20,5 +20,7 @@ if __name__ == '__main__':
             for acs in env.action_spaces:
                 action = acs.sample()
                 actions.append(action)
+            print(actions)
             env.step(actions)
+            
 

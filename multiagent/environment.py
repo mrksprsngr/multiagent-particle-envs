@@ -64,6 +64,7 @@ class MultiAgentEnv(gym.Env):
                                             dtype=np.float32)
             if agent.movable:
                 total_action_space.append(u_action_space)
+            
             # communication action space
             if self.discrete_action_space:
                 c_action_space = spaces.Discrete(world.dim_c)
@@ -92,6 +93,8 @@ class MultiAgentEnv(gym.Env):
             self.observation_spaces.append(
                 spaces.Box(low=-np.inf, high=+np.inf, shape=(obs_dim,), dtype=np.float32))
             agent.action.c = np.zeros(self.world.dim_c)
+        #self.observation_space=self.observation_space[0]
+        #self.action_space=self.action_space[0]
 
         # rendering
         self.clock = None
@@ -105,7 +108,11 @@ class MultiAgentEnv(gym.Env):
         self.agents = self.world.policy_agents
         # set action for each agent
         for i, agent in enumerate(self.agents):
+<<<<<<< HEAD
             self._set_action(action_n[i], agent, self.action_spaces[i])
+=======
+            self._set_action(action_n[i], agent, self.action_space[i]) #changed action_space from [i] to nothing
+>>>>>>> 819aa54 (fixed comm inputs mixing with action inputs)
         # advance world state
         self.world.step()
         # record observation for each agent

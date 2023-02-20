@@ -16,3 +16,6 @@ setup(name='multiagent',
             'pygame'
       ]
 )
+
+#add six==1.15.0
+#add pyglet=1.5.11
