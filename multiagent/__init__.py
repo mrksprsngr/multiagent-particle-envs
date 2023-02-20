@@ -26,3 +26,8 @@ register(
     id='POMDPComSpreadEnv-v0',
     entry_point='multiagent.envs.pomdp_com_spread:POMDPComSpreadEnv',
 )
+
+register(
+    id='BlindSpread-v0',
+    entry_point='multiagent.envs.blind_spread:BlindSpreadEnv',
+)
