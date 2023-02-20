@@ -17,7 +17,7 @@ if __name__ == '__main__':
         for i in range(100):
             env.render()
             actions = []
-            for acs in env.action_space:
+            for acs in env.action_spaces:
                 action = acs.sample()
                 actions.append(action)
             env.step(actions)
