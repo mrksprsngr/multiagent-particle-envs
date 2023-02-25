@@ -18,7 +18,7 @@ class BlindSpreadScenario(BaseScenario):
     def make_world(self):
         world = World()
         # set any world properties first
-        world.dim_c = 0
+        world.dim_c = 2
         num_agents = 3
         num_landmarks = 3
         world.collaborative = True
@@ -27,7 +27,7 @@ class BlindSpreadScenario(BaseScenario):
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = True
-            agent.silent = True
+            agent.silent = False #Why True ?
             agent.size = 0.15
         # add landmarks
         world.landmarks = [Landmark() for i in range(num_landmarks)]
@@ -114,4 +114,5 @@ class BlindSpreadScenario(BaseScenario):
         entity_color = []
         for entity in world.landmarks:  # world.entities:
             entity_color.append(entity.color)
+        #print(f"agent.state.vel is:{agent.state.p_vel},agent.state.pos is :{agent.state.p_pos},landmark_pos is : {landmark_pos},other_pos is : {other_pos},comm is : {comm}")
         return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + landmark_pos + other_pos + comm)
