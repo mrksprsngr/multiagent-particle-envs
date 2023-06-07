@@ -25,7 +25,7 @@ class SimpleEnv(gym.Wrapper):
 
         # unwrap lists since only one agent is in the scenario
         self.action_space = self.action_spaces[0]
-        self.observation_space = self.observation_space[0]
+        self.observation_space = self.observation_spaces[0]
 
     def step(self, action):
         xs, rs, dones, info = self.env.step([action])
