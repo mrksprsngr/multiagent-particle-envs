@@ -5,8 +5,8 @@ from multiagent.environment import MultiAgentEnv
 # ----------------------------------------
 
 register(
-    id='Simple-v0',
-    entry_point='multiagent.envs.simple:SimpleEnv',
+    id='SingleAgent-v0',
+    entry_point='multiagent.envs.single_agent:SingleAgentEnv',
     max_episode_steps=100,
 )
 

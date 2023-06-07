@@ -3,7 +3,7 @@ import gym
 import multiagent  # noqa
 
 if __name__ == '__main__':
-    env = gym.make("Simple-v0")
+    env = gym.make("SingleAgent-v0")
 
     for i in range(10):
         # start a new eposide
