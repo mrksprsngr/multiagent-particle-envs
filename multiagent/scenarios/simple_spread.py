@@ -8,15 +8,15 @@ class SimpleSpreadScenario(BaseScenario):
         world = World()
         # set any world properties first
         world.dim_c = 0
-        num_agents = 3
-        num_landmarks = 3
+        num_agents = 2
+        num_landmarks = 2
         world.collaborative = True
         # add agents
         world.agents = [Agent() for i in range(num_agents)]
         for i, agent in enumerate(world.agents):
             agent.name = 'agent %d' % i
             agent.collide = True
-            agent.silent = False
+            agent.silent = True
             agent.size = 0.15
         # add landmarks
         world.landmarks = [Landmark() for i in range(num_landmarks)]
@@ -98,4 +98,20 @@ class SimpleSpreadScenario(BaseScenario):
             if not other.silent:
                 comm.append(other.state.c)
             other_pos.append(other.state.p_pos - agent.state.p_pos)
-        return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos+ other_pos + np.asarray(comm))
+        entity_pos = np.array(entity_pos)
+        other_pos = np.array(other_pos)
+        if len(comm) > 0:
+            return np.concatenate([
+                agent.state.p_vel.flatten(),
+                agent.state.p_pos.flatten(),
+                entity_pos.flatten(),
+                other_pos.flatten(),
+                np.asarray(comm)
+            ])
+        else:
+            return np.concatenate([
+                agent.state.p_vel.flatten(),
+                agent.state.p_pos.flatten(),
+                entity_pos.flatten(),
+                other_pos.flatten()
+            ])

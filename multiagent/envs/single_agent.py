@@ -1,15 +1,12 @@
-import numpy as np
 import gym
 
-from multiagent.core import Agent, Landmark, World
-from multiagent.scenario import BaseScenario
 from multiagent.environment import MultiAgentEnv
-from multiagent.scenarios.simple import Scenario
+from multiagent.scenarios.single_agent import SingleAgentScenario
 
 
-class SimpleEnv(gym.Wrapper):
+class SingleAgentEnv(gym.Wrapper):
     def __init__(self):
-        scenario = Scenario()
+        scenario = SingleAgentScenario()
         world = scenario.make_world()
 
         env = MultiAgentEnv(
@@ -21,11 +18,11 @@ class SimpleEnv(gym.Wrapper):
             done_callback=None,
             shared_viewer=True  # set to True to make rendering static
         )
-        super(SimpleEnv, self).__init__(env)
+        super(SingleAgentEnv, self).__init__(env)
 
         # unwrap lists since only one agent is in the scenario
         self.action_space = self.action_spaces[0]
-        self.observation_space = self.observation_space[0]
+        self.observation_space = self.observation_spaces[0]
 
     def step(self, action):
         xs, rs, dones, info = self.env.step([action])
