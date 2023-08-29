@@ -17,7 +17,7 @@ register(
     entry_point='multiagent.envs.simple_spread:SimpleSpreadEnv',
 )
 register(
-    id='SimpleSpread-v01',
+    id='SimpleSpreadCollision-v0',
     entry_point='multiagent.envs.simple_spread_collision:SimpleSpreadCollisionEnv',
 )
 

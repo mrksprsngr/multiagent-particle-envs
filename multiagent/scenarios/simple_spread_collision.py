@@ -35,20 +35,16 @@ class SimpleSpreadCollisionScenario(BaseScenario):
         # random properties for landmarks
         for i, landmark in enumerate(world.landmarks):
             landmark.color = np.array([0.25, 0.25, 0.25])
-        # set random initial states
-        for agent in world.agents:
-            agent.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
-            agent.state.p_vel = np.zeros(world.dim_p)
-            agent.state.c = np.zeros(world.dim_c)
         # Randomly choose one diagonal
         diagonal_index = np.random.randint(0, 2)
-        diagonal = np.array([[1, 1], [-1, -1]]) if diagonal_index == 0 else np.array([[1, -1], [-1, 1]])
-        np.random.shuffle(diagonal)
+        diagonal_agent = np.array([[0.8, 0.8], [-0.8, -0.8]]) if diagonal_index == 0 else np.array([[0.8, -0.8], [-0.8, 0.8]])
+        diagonal_landmark = np.array([[0.8, 0.8], [-0.8, -0.8]]) if diagonal_index == 1 else np.array([[0.8, -0.8], [-0.8, 0.8]])
+        for i, agent in enumerate(world.agents):
+            agent.state.p_pos = diagonal_agent[i]
+            agent.state.p_vel = np.zeros(world.dim_p)
+            agent.state.c = np.zeros(world.dim_c)
         for i, landmark in enumerate(world.landmarks):
-            landmark.state.p_pos = diagonal[i]
-            landmark.state.p_vel = np.zeros(world.dim_p)
-        for i, landmark in enumerate(world.landmarks):
-            landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
+            landmark.state.p_pos = diagonal_landmark[i]
             landmark.state.p_vel = np.zeros(world.dim_p)
 
     def benchmark_data(self, agent, world):
