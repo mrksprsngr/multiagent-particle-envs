@@ -4,7 +4,8 @@ from multiagent.scenario import BaseScenario
 
 
 class SimpleSpreadCollisionScenario(BaseScenario):
-    def make_world(self):
+    def make_world(self): 
+        # Initialize world and set properties (reset is done once at the end of this function)
         world = World()
         # set any world properties first
         world.dim_c = 0
@@ -36,17 +37,24 @@ class SimpleSpreadCollisionScenario(BaseScenario):
         for i, landmark in enumerate(world.landmarks):
             landmark.color = np.array([0.25, 0.25, 0.25])
         # Randomly choose one diagonal
-        diagonal_index = np.random.randint(0, 2)
-        diagonal_agent = np.array([[0.8, 0.8], [-0.8, -0.8]]) if diagonal_index == 0 else np.array([[0.8, -0.8], [-0.8, 0.8]])
-        diagonal_landmark = np.array([[0.8, 0.8], [-0.8, -0.8]]) if diagonal_index == 1 else np.array([[0.8, -0.8], [-0.8, 0.8]])
+        # positive_diagonal_index = np.random.randint(0, 2)
+        # negative_diagonal_index = np.random.randint(0, 2)
+        positive_diagonal_index = 0
+        negative_diagonal_index = 0
+        # Set the position of the agents and landmarks
+        agent_org_dist = 0.8
+        landmark_org_dist = 0.8
+        agent_pos = self.get_position(positive_diagonal_index, negative_diagonal_index, agent_org_dist, 'agent')
+        landmark_pos = self.get_position(positive_diagonal_index, negative_diagonal_index, landmark_org_dist, 'landmark')
         for i, agent in enumerate(world.agents):
-            agent.state.p_pos = diagonal_agent[i]
+            agent.state.p_pos = agent_pos[i]
             agent.state.p_vel = np.zeros(world.dim_p)
             agent.state.c = np.zeros(world.dim_c)
         for i, landmark in enumerate(world.landmarks):
-            landmark.state.p_pos = diagonal_landmark[i]
+            landmark.state.p_pos = landmark_pos[i]
             landmark.state.p_vel = np.zeros(world.dim_p)
 
+    
     def benchmark_data(self, agent, world):
         rew = 0
         collisions = 0
@@ -71,12 +79,30 @@ class SimpleSpreadCollisionScenario(BaseScenario):
         dist_min = agent1.size + agent2.size
         return True if dist < dist_min else False
 
+    def get_position(self, positive_diagonal_index, negative_diagonal_index, org_dist, entity):
+        if entity == 'agent':
+            pos = np.array([-org_dist, -org_dist]) if positive_diagonal_index == 0 else np.array([org_dist, org_dist])
+            pos = np.vstack([pos, [-org_dist, org_dist] if negative_diagonal_index == 0 else [org_dist, -org_dist]])
+        elif entity == 'landmark':
+            # Switching the diagonal index for landmark 
+            pos = np.array([org_dist, org_dist]) if positive_diagonal_index == 0 else np.array([-org_dist, -org_dist])
+            pos = np.vstack([pos, [org_dist, -org_dist] if negative_diagonal_index == 0 else [-org_dist, org_dist]])
+        return pos
+
     def reward(self, agent, world):
         # Agents are rewarded based on minimum agent distance to each landmark, penalized for collisions
+        # markus: may change to reward based on specific landmark
+
         rew = 0
-        for l in world.landmarks:
-            dists = [np.sqrt(np.sum(np.square(a.state.p_pos - l.state.p_pos))) for a in world.agents]
-            rew -= min(dists)
+        # old version: reward based on minimum agent distance to each landmark
+        # for l in world.landmarks:
+        #    dists = [np.sqrt(np.sum(np.square(a.state.p_pos - l.state.p_pos))) for a in world.agents]
+        #    rew -= min(dists)
+        for i, agent in enumerate(world.agents):
+            landmark = world.landmarks[i]
+            dist = np.sqrt(np.sum(np.square(agent.state.p_pos - landmark.state.p_pos)))
+            rew -= dist  # assuming rew is your reward variable
+
         if agent.collide:
             for a in world.agents:
                 if a is not agent and self.is_collision(a, agent):
