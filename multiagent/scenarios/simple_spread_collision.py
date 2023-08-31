@@ -37,13 +37,13 @@ class SimpleSpreadCollisionScenario(BaseScenario):
         for i, landmark in enumerate(world.landmarks):
             landmark.color = np.array([0.25, 0.25, 0.25])
         # Randomly choose one diagonal
-        # positive_diagonal_index = np.random.randint(0, 2)
-        # negative_diagonal_index = np.random.randint(0, 2)
-        positive_diagonal_index = 0
-        negative_diagonal_index = 0
+        positive_diagonal_index = np.random.randint(0, 2)
+        negative_diagonal_index = np.random.randint(0, 2)
+        # positive_diagonal_index = 0
+        # negative_diagonal_index = 0
         # Set the position of the agents and landmarks
         agent_org_dist = 0.8
-        landmark_org_dist = 0.8
+        landmark_org_dist = 0.4
         agent_pos = self.get_position(positive_diagonal_index, negative_diagonal_index, agent_org_dist, 'agent')
         landmark_pos = self.get_position(positive_diagonal_index, negative_diagonal_index, landmark_org_dist, 'landmark')
         for i, agent in enumerate(world.agents):
@@ -106,6 +106,7 @@ class SimpleSpreadCollisionScenario(BaseScenario):
         if agent.collide:
             for a in world.agents:
                 if a is not agent and self.is_collision(a, agent):
+                    # print(f"Collision between {a.name} and {agent.name}")
                     rew -= 1
         return rew
 
