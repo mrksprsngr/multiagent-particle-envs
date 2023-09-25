@@ -14,7 +14,7 @@ class SimpleSpreadCollisionEnv(MultiAgentEnv):
             reset_callback=scenario.reset_world,
             reward_callback=scenario.reward,
             observation_callback=scenario.observation,
-            info_callback=None,
+            info_callback=scenario.benchmark_data,
             done_callback=None,
             shared_viewer=True
         )
