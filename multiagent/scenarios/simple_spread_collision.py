@@ -33,10 +33,16 @@ class SimpleSpreadCollisionScenario(BaseScenario):
     def reset_world(self, world):
         # random properties for agents
         for i, agent in enumerate(world.agents):
-            agent.color = np.array([0.35, 0.35, 0.85])
+            if i == 0:
+                agent.color = np.array([0.35, 0.35, 0.85])
+            else:     
+                agent.color = np.array([0.85, 0.35, 0.35])
         # random properties for landmarks
         for i, landmark in enumerate(world.landmarks):
-            landmark.color = np.array([0.25, 0.25, 0.25])
+            if i == 0:
+                landmark.color = np.array([0.30, 0.30, 0.80])
+            else:
+                landmark.color = np.array([0.80, 0.30, 0.30])
         # Randomly choose one diagonal
         positive_diagonal_index = np.random.randint(0, 2)
         negative_diagonal_index = np.random.randint(0, 2)
