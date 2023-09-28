@@ -64,6 +64,8 @@ class SimpleSpreadCollisionScenario(BaseScenario):
             landmark = world.landmarks[i]
             dist = np.sqrt(np.sum(np.square(agent.state.p_pos - landmark.state.p_pos)))
             rew -= dist  # assuming rew is your reward variable
+            if not all(-1 <= value <= 1 for value in agent.state.p_pos):
+                rew -= 3
 
         if agent.collide:
             for a in world.agents:
@@ -83,6 +85,7 @@ class SimpleSpreadCollisionScenario(BaseScenario):
         # communication of all other agents
         comm = []
         other_pos_relative = []
+        other_vel_relative = []
         other_pos_absolut = []
         other_vel_absolut = []  
         for other in world.agents:
@@ -90,11 +93,13 @@ class SimpleSpreadCollisionScenario(BaseScenario):
             if not other.silent:
                 comm.append(other.state.c)
             other_pos_relative.append(other.state.p_pos - agent.state.p_pos)
+            other_vel_relative.append(other.state.p_vel - agent.state.p_vel)
             other_pos_absolut.append(other.state.p_pos)
             other_vel_absolut.append(other.state.p_vel)
 
         entity_pos = np.array(entity_pos)
         other_pos_relative = np.array(other_pos_relative)
+        other_vel_relative = np.array(other_vel_relative)
         other_pos_absolut = np.array(other_pos_absolut)
         other_vel_absolut = np.array(other_vel_absolut)
 
@@ -108,8 +113,7 @@ class SimpleSpreadCollisionScenario(BaseScenario):
                 agent.state.p_pos.flatten(),
                 entity_pos.flatten(),
                 other_pos_relative.flatten(),
-                other_pos_absolut.flatten(),
-                other_vel_absolut.flatten(),
+                other_vel_relative.flatten()
             ])
 
     def benchmark_data(self, agent, world):
